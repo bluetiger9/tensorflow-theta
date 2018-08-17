@@ -23,6 +23,8 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
 
     <uses-sdk
         android:minSdkVersion="21"
@@ -34,9 +36,9 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/MaterialTheme">
 
-        <activity android:name="org.tensorflow.demo.ClassifierActivity"
+        <activity android:name="org.tensorflow.demo.DetectorActivity"
                   android:screenOrientation="portrait"
-                  android:label="@string/activity_name_classification">
+                  android:label="@string/activity_name_detection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -44,9 +46,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="org.tensorflow.demo.DetectorActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/activity_name_detection">
+        <activity android:name="org.tensorflow.demo.ClassifierActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/activity_name_classification">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -25,10 +25,11 @@ getProject().setBuildDir('gradleBuild')
 buildscript {
     repositories {
         jcenter()
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'org.apache.httpcomponents:httpclient:4.5.4'
     }
 }
@@ -36,11 +37,12 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
 // set to 'bazel', 'cmake', 'makefile', 'none'
-def nativeBuildSystem = 'bazel'
+def nativeBuildSystem = 'none'
 
 // Controls output directory in APK and CPU type for Bazel builds.
 // NOTE: Does not affect the Makefile build target API (yet), which currently
@@ -77,7 +79,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     if (nativeBuildSystem == 'cmake') {
         defaultConfig {
@@ -189,6 +191,6 @@ apply from: "download-models.gradle"
 
 dependencies {
     if (nativeBuildSystem == 'cmake' || nativeBuildSystem == 'none') {
-        compile 'org.tensorflow:tensorflow-android:+'
+        implementation 'org.tensorflow:tensorflow-android:+'
     }
 }

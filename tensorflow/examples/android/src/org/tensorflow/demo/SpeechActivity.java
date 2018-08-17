@@ -34,8 +34,10 @@ package org.tensorflow.demo;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -101,6 +103,10 @@ public class SpeechActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     // Set up the UI.
     super.onCreate(savedInstanceState);
+
+    AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE); // for THETA
+    am.setParameters("RicUseBFormat=false"); // for THETA
+
     setContentView(R.layout.activity_speech);
     quitButton = (Button) findViewById(R.id.quit);
     quitButton.setOnClickListener(

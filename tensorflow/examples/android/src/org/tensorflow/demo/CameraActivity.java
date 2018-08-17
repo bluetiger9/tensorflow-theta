@@ -20,6 +20,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -74,6 +75,9 @@ public abstract class CameraActivity extends Activity
   protected void onCreate(final Bundle savedInstanceState) {
     LOGGER.d("onCreate " + this);
     super.onCreate(null);
+
+    sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE")); // for THETA
+
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     setContentView(R.layout.activity_camera);
@@ -117,7 +121,7 @@ public abstract class CameraActivity extends Activity
         previewHeight = previewSize.height;
         previewWidth = previewSize.width;
         rgbBytes = new int[previewWidth * previewHeight];
-        onPreviewSizeChosen(new Size(previewSize.width, previewSize.height), 90);
+        onPreviewSizeChosen(new Size(previewSize.width, previewSize.height), 0);
       }
     } catch (final Exception e) {
       LOGGER.e(e, "Exception!");
