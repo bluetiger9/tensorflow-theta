@@ -84,7 +84,7 @@ public class StylizeActivity extends CameraActivity implements OnImageAvailableL
 
   private static final boolean DEBUG_MODEL = false;
 
-  private static final int[] SIZES = {128, 192, 256, 384, 512, 720};
+  private static final int[] SIZES = {128, 192, 256, 384, 512, 720, 1024, 1920};
 
   private static final Size DESIRED_PREVIEW_SIZE = new Size(1280, 720);
 
@@ -495,7 +495,7 @@ public class StylizeActivity extends CameraActivity implements OnImageAvailableL
       frameToCropTransform = ImageUtils.getTransformationMatrix(
           previewWidth, previewHeight,
           desiredSize, desiredSize,
-          sensorOrientation, true);
+          sensorOrientation, false);
 
       cropToFrameTransform = new Matrix();
       frameToCropTransform.invert(cropToFrameTransform);
@@ -520,7 +520,16 @@ public class StylizeActivity extends CameraActivity implements OnImageAvailableL
             final long startTime = SystemClock.uptimeMillis();
             stylizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
-            textureCopyBitmap = Bitmap.createBitmap(croppedBitmap);
+            textureCopyBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Config.ARGB_8888);
+
+            final Paint paint = new Paint();
+            paint.setFilterBitmap(true);
+            final Canvas canvas = new Canvas(textureCopyBitmap);
+            canvas.drawBitmap(croppedBitmap, cropToFrameTransform, paint);
+
+            if (SAVE_PREVIEW_BITMAP) {
+              ImageUtils.saveBitmap(textureCopyBitmap, "stylizeImage.png");
+            }
             requestRender();
             readyForNextImage();
           }
@@ -623,7 +632,7 @@ public class StylizeActivity extends CameraActivity implements OnImageAvailableL
     lines.add("View: " + canvas.getWidth() + "x" + canvas.getHeight());
     lines.add("Rotation: " + sensorOrientation);
     lines.add("Inference time: " + lastProcessingTimeMs + "ms");
-    lines.add("Desired size: " + desiredSize);
+    lines.add("Desired size: " + desiredSize + "x" + desiredSize);
     lines.add("Initialized size: " + initializedSize);
 
     borderedText.drawLines(canvas, 10, canvas.getHeight() - 10, lines);
