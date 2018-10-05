@@ -33,7 +33,6 @@ package org.tensorflow.demo;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
@@ -42,11 +41,15 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.theta360.pluginlibrary.activity.PluginActivity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +63,7 @@ import org.tensorflow.demo.R;
  * An activity that listens for audio and then uses a TensorFlow model to detect particular classes,
  * by default a small set of action words.
  */
-public class SpeechActivity extends Activity {
+public class SpeechActivity extends PluginActivity {
 
   // Constants that control the behavior of the recognition code and model
   // settings. See the audio recognition tutorial for a detailed explanation of

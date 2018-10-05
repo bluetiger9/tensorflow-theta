@@ -16,13 +16,13 @@ package org.tensorflow.demo;
  * limitations under the License.
  */
 
-import android.app.Fragment;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v4.app.Fragment;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
