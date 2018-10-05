@@ -41,12 +41,15 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.theta360.pluginlibrary.activity.PluginActivity;
+
 import java.nio.ByteBuffer;
 import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.Logger;
 import org.tensorflow.demo.R; // Explicit import needed for internal Google builds.
 
-public abstract class CameraActivity extends Activity
+public abstract class CameraActivity extends PluginActivity //extends Activity//
     implements OnImageAvailableListener, Camera.PreviewCallback {
   private static final Logger LOGGER = new Logger();
 
