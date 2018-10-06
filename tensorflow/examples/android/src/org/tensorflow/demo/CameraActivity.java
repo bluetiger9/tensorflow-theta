@@ -147,7 +147,7 @@ public abstract class CameraActivity extends PluginActivity
       setFragment();
     } else {
       // Set app permission in Settings app, or install from THETA plugin store
-      finishAndRemoveTask();
+      notificationError("Permissions are not granted.");
     }
 
     // Set a callback when a button operation event is acquired.

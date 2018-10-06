@@ -31,6 +31,7 @@ the RecognizeCommands helper class.
 
 package org.tensorflow.demo;
 
+import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
@@ -44,6 +45,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -82,6 +84,8 @@ public class SpeechActivity extends PluginActivity {
   private static final String INPUT_DATA_NAME = "decoded_sample_data:0";
   private static final String SAMPLE_RATE_NAME = "decoded_sample_data:1";
   private static final String OUTPUT_SCORES_NAME = "labels_softmax";
+
+  private static final String PERMISSION_AUDIO = Manifest.permission.RECORD_AUDIO;
 
   // UI elements.
   private static final int REQUEST_RECORD_AUDIO = 13;
@@ -160,16 +164,28 @@ public class SpeechActivity extends PluginActivity {
     // Load the TensorFlow model.
     inferenceInterface = new TensorFlowInferenceInterface(getAssets(), MODEL_FILENAME);
 
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     // Start the recording and recognition threads.
-    requestMicrophonePermission();
+    if( !hasPermission() ){
+      notificationError("Permissions are not granted.");
+    }
     startRecording();
     startRecognition();
+  }
+
+  private boolean hasPermission() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      return checkSelfPermission(PERMISSION_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    } else {
+      return true;
+    }
   }
 
   private void requestMicrophonePermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       requestPermissions(
-          new String[]{android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
+          new String[]{PERMISSION_AUDIO}, REQUEST_RECORD_AUDIO);
     }
   }
 
