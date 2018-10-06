@@ -35,19 +35,33 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Trace;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Size;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import org.tensorflow.demo.task.TakePictureTask;
 import com.theta360.pluginlibrary.activity.PluginActivity;
+import com.theta360.pluginlibrary.callback.KeyCallback;
+import com.theta360.pluginlibrary.receiver.KeyReceiver;
+import com.theta360.pluginlibrary.values.LedColor;
+import com.theta360.pluginlibrary.values.LedTarget;
 
 import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.Logger;
 import org.tensorflow.demo.R; // Explicit import needed for internal Google builds.
+
+import static android.os.SystemClock.sleep;
 
 public abstract class CameraActivity extends PluginActivity
     implements OnImageAvailableListener, Camera.PreviewCallback {
@@ -74,21 +88,142 @@ public abstract class CameraActivity extends PluginActivity
   private Runnable postInferenceCallback;
   private Runnable imageConverter;
 
+  private boolean isInferenceWorking = true;
+  private boolean isTakingPicture = false;
+
+  private Handler mCameraActivityHandler=null;
+
+  protected String mObjectNameToFind;
+  protected boolean mObjectNameFound = false;
+
+  private Date mCaptureTime;
+  private final long mThreashIgnore_msec = 15 * 1000; // Capturing interval [msec]
+
+  private final String mObjectToFind = "person"; // Take picture when the object found.
+
+  private boolean isEnded = false;
+
+  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
+    @Override
+    public void onTakePicture(String fileUrl) {
+      isTakingPicture = false;
+      // Start Preview
+      startInference();
+    }
+  };
+
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     LOGGER.d("onCreate " + this);
     super.onCreate(null);
 
-    sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE")); // for THETA
+    mCameraActivityHandler = new Handler();
+
+    onSetObjectNameToFind(mObjectToFind);
+
+    try {
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+      mCaptureTime = simpleDateFormat.parse("2018/10/6 12:00:00"); // initialize to the past
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
+    setAutoClose(false);
+
+    //notificationWlanOff();
+    notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      actionBar.hide();
+    }
 
     setContentView(R.layout.activity_camera);
 
     if (hasPermission()) {
       setFragment();
     } else {
-      requestPermission();
+      // Set app permission in Settings app, or install from THETA plugin store
+      finishAndRemoveTask();
+    }
+
+    // Set a callback when a button operation event is acquired.
+    setKeyCallback(new KeyCallback() {
+      @Override
+      public void onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
+          stopInferenceAndCapture();
+        }
+      }
+
+      @Override
+      public void onKeyUp(int keyCode, KeyEvent event) {
+        /**
+         * You can control the LED of the camera.
+         * It is possible to change the way of lighting, the cycle of blinking, the color of light emission.
+         * Light emitting color can be changed only LED3.
+         */
+        notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 1000);
+      }
+
+      @Override
+      public void onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyReceiver.KEYCODE_MEDIA_RECORD){
+          if(!isTakingPicture) {
+            endProcess();
+          }
+        }
+      }
+    });
+  }
+
+  protected void stopInferenceAndCapture() {
+    stopInference();
+
+    isTakingPicture = true;
+    // Take Picture
+    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
+  }
+
+  protected void startInference() {
+    if (isEnded) {
+      // now on ending process
+    }else{
+      notificationCameraClose();
+      sleep(400);
+
+      mCameraActivityHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+          fragment.onResume();
+          isInferenceWorking = true;
+        }
+      });
+    }
+  }
+
+  protected void stopInference() {
+    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+    if(isInferenceWorking) {
+      isInferenceWorking = false;
+      // Stop Preview
+      fragment.onPause();
+      notificationCameraOpen();
+      sleep(600);
+    }
+  }
+
+  private void endProcess() {
+    Log.d("debug","CameraActivity::endProcess(): "+ isEnded);
+
+    if (!isEnded) {
+      isEnded = true;
+      stopInference();
+      close();
     }
   }
 
@@ -153,6 +288,16 @@ public abstract class CameraActivity extends PluginActivity
           }
         };
     processImage();
+
+    if( objectNameFound() ) {
+      mObjectNameFound = false;
+      Date currentTime = Calendar.getInstance().getTime();
+      long diff_msec = currentTime.getTime() - mCaptureTime.getTime();
+      if (diff_msec > mThreashIgnore_msec){
+        stopInferenceAndCapture();
+        mCaptureTime = currentTime;
+      }
+    }
   }
 
   /**
@@ -243,7 +388,7 @@ public abstract class CameraActivity extends PluginActivity
 
     if (!isFinishing()) {
       LOGGER.d("Requesting finish");
-      finish();
+      close();
     }
 
     handlerThread.quitSafely();
@@ -435,6 +580,13 @@ public abstract class CameraActivity extends PluginActivity
       return true;
     }
     return super.onKeyDown(keyCode, event);
+  }
+
+  protected void onSetObjectNameToFind(final String name) {
+    mObjectNameToFind = name; // TF_OD_API_LABELS_FILE
+  }
+  protected boolean objectNameFound() {
+    return mObjectNameFound;
   }
 
   protected void readyForNextImage() {

@@ -86,7 +86,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final DetectorMode MODE = DetectorMode.TF_OD_API;
 
   // Minimum detection confidence to track a detection.
-  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.6f;
+  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.7f;
   private static final float MINIMUM_CONFIDENCE_MULTIBOX = 0.1f;
   private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
 
@@ -320,6 +320,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 cropToFrameTransform.mapRect(location);
                 result.setLocation(location);
                 mappedRecognitions.add(result);
+
+                String title = result.getTitle();
+                if( title.equals(mObjectNameToFind) ){
+                  mObjectNameFound = true;
+                }
               }
             }
 
