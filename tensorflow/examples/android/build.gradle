@@ -80,7 +80,6 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion '28.0.3'
-
     if (nativeBuildSystem == 'cmake') {
         defaultConfig {
             applicationId = 'org.tensorflow.demo'
@@ -101,11 +100,9 @@ android {
             }
         }
     }
-
     lintOptions {
         abortOnError false
     }
-
     sourceSets {
         main {
             if (nativeBuildSystem == 'bazel' || nativeBuildSystem == 'makefile') {
@@ -139,6 +136,10 @@ android {
     }
     defaultConfig {
         minSdkVersion = 25
+        versionCode 1
+        versionName '1.0.0'
+    }
+    productFlavors {
     }
 }
 

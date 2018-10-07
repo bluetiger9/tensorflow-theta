@@ -131,7 +131,8 @@ public abstract class CameraActivity extends PluginActivity
     // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
     setAutoClose(false);
 
-    //notificationWlanOff();
+    notificationWlanOff(); // for power saving
+    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
     notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -166,7 +167,6 @@ public abstract class CameraActivity extends PluginActivity
          * It is possible to change the way of lighting, the cycle of blinking, the color of light emission.
          * Light emitting color can be changed only LED3.
          */
-        notificationLedBlink(LedTarget.LED3, LedColor.BLUE, 1000);
       }
 
       @Override
