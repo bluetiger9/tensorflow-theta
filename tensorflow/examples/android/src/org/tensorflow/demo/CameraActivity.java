@@ -54,6 +54,7 @@ import com.theta360.pluginlibrary.values.LedTarget;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -103,14 +104,59 @@ public abstract class CameraActivity extends PluginActivity
 
   private boolean isEnded = false;
 
+  private final String CLOUD_UPLOAD_RESULT_KEY_NAME = "UploadResult";
+  private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
+  private boolean ENABLE_CLOUD_UPLOAD = true;
+
   private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
     @Override
     public void onTakePicture(String fileUrl) {
+      //fileUrl = "http://127.0.0.1:8080/files/150100525831424d420703bede5d2400/100RICOH/R0010231.JPG"
+      LOGGER.d("onTakePicture: " + fileUrl);
       isTakingPicture = false;
-      // Start Preview
-      startInference();
+
+      if(ENABLE_CLOUD_UPLOAD) {
+        cloudUpload(fileUrl);
+      }else {
+        // Start Preview
+        startInference();
+      }
     }
   };
+
+  // Upload fileUrl to Google Photos by Cloud Upload plug-in
+  private void cloudUpload(String fileUrl){
+    int lastIndex = fileUrl.lastIndexOf('/');
+    String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
+    String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
+    LOGGER.d("cloudUpload: " + filePath);
+
+    Intent intent=new Intent();
+    ArrayList<String> photoList = new ArrayList();
+    photoList.add(filePath);
+    intent.setClassName("com.theta360.cloudupload","com.theta360.cloudupload.MainActivity");
+    intent.putStringArrayListExtra("com.theta360.cloudupload.photoList", photoList);
+    startActivityForResult(intent, CLOUD_UPLOAD_REQUSEST_CODE);
+    // once go to onStop after calling startActivityForResult
+  }
+
+  // Result from cloudupload
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    LOGGER.d("onActivityResult: " + requestCode + ", resultCode=" + resultCode);
+    switch(requestCode) {
+      case (CLOUD_UPLOAD_REQUSEST_CODE):
+        if(resultCode == RESULT_OK){
+          boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
+          Log.d("uploadResult", String.valueOf(uploadResult));
+        }
+        startInference();
+        break;
+      default:
+        break;
+    }
+    // onRestart and onStart will be called.
+  }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -131,8 +177,11 @@ public abstract class CameraActivity extends PluginActivity
     // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
     setAutoClose(false);
 
-    notificationWlanOff(); // for power saving
-    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
+    if(ENABLE_CLOUD_UPLOAD) {
+      notificationWlanCl(); // for uploading file
+    }else{
+      notificationWlanOff(); // for power saving
+    }
     notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -369,6 +418,12 @@ public abstract class CameraActivity extends PluginActivity
   @Override
   public synchronized void onStart() {
     LOGGER.d("onStart " + this);
+
+    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
+    notificationLedHide(LedTarget.LED5);
+    notificationLedHide(LedTarget.LED6);
+    notificationLedHide(LedTarget.LED7);
+    notificationLedHide(LedTarget.LED8);
     super.onStart();
   }
 
@@ -385,11 +440,6 @@ public abstract class CameraActivity extends PluginActivity
   @Override
   public synchronized void onPause() {
     LOGGER.d("onPause " + this);
-
-    if (!isFinishing()) {
-      LOGGER.d("Requesting finish");
-      close();
-    }
 
     handlerThread.quitSafely();
     try {
@@ -412,6 +462,10 @@ public abstract class CameraActivity extends PluginActivity
   @Override
   public synchronized void onDestroy() {
     LOGGER.d("onDestroy " + this);
+    if (!isFinishing()) {
+      LOGGER.d("Requesting finish");
+      close();
+    }
     super.onDestroy();
   }
 
