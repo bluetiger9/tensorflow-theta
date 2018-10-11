@@ -113,13 +113,6 @@ public abstract class PluginActivity extends AppCompatActivity {
                     }
                 });
         Thread.setDefaultUncaughtExceptionHandler(uncaughtException);
-
-
-        mKeyReceiver = new KeyReceiver(onKeyReceiver);
-        IntentFilter keyFilter = new IntentFilter();
-        keyFilter.addAction(KeyReceiver.ACTION_KEY_DOWN);
-        keyFilter.addAction(KeyReceiver.ACTION_KEY_UP);
-        registerReceiver(mKeyReceiver, keyFilter);
     }
 
     @Override
@@ -131,19 +124,19 @@ public abstract class PluginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-//        mKeyReceiver = new KeyReceiver(onKeyReceiver);
-//        IntentFilter keyFilter = new IntentFilter();
-//        keyFilter.addAction(KeyReceiver.ACTION_KEY_DOWN);
-//        keyFilter.addAction(KeyReceiver.ACTION_KEY_UP);
-//        registerReceiver(mKeyReceiver, keyFilter);
+        mKeyReceiver = new KeyReceiver(onKeyReceiver);
+        IntentFilter keyFilter = new IntentFilter();
+        keyFilter.addAction(KeyReceiver.ACTION_KEY_DOWN);
+        keyFilter.addAction(KeyReceiver.ACTION_KEY_UP);
+        registerReceiver(mKeyReceiver, keyFilter);
     }
 
     @Override
     protected void onPause() {
-//        if (!isClosed) {
-//            close();
-//        }
-//        unregisterReceiver(mKeyReceiver);
+        if (!isClosed) {
+            close();
+        }
+        unregisterReceiver(mKeyReceiver);
 
         super.onPause();
     }
@@ -155,11 +148,6 @@ public abstract class PluginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (!isClosed) {
-            close();
-        }
-        unregisterReceiver(mKeyReceiver);
-
         super.onDestroy();
     }
 

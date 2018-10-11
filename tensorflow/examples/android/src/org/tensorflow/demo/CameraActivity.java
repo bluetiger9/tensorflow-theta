@@ -126,11 +126,13 @@ public abstract class CameraActivity extends PluginActivity
 
   // Upload fileUrl to Google Photos by Cloud Upload plug-in
   private void cloudUpload(String fileUrl){
+    // Convert fileUrl to filePath
     int lastIndex = fileUrl.lastIndexOf('/');
     String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
     String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
     LOGGER.d("cloudUpload: " + filePath);
 
+    // Call File Cloud Upload
     Intent intent=new Intent();
     ArrayList<String> photoList = new ArrayList();
     photoList.add(filePath);
@@ -148,7 +150,7 @@ public abstract class CameraActivity extends PluginActivity
       case (CLOUD_UPLOAD_REQUSEST_CODE):
         if(resultCode == RESULT_OK){
           boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
-          Log.d("uploadResult", String.valueOf(uploadResult));
+          LOGGER.d("uploadResult: " + String.valueOf(uploadResult));
         }
         startInference();
         break;
@@ -267,7 +269,7 @@ public abstract class CameraActivity extends PluginActivity
   }
 
   private void endProcess() {
-    Log.d("debug","CameraActivity::endProcess(): "+ isEnded);
+    LOGGER.d("CameraActivity::endProcess(): "+ isEnded);
 
     if (!isEnded) {
       isEnded = true;
