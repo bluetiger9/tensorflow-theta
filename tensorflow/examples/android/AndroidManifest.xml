@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--
+
         <activity android:name="org.tensorflow.demo.SpeechActivity"
             android:screenOrientation="portrait"
             android:label="@string/activity_name_speech">
@@ -72,6 +72,6 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        -->
+
     </application>
 </manifest>

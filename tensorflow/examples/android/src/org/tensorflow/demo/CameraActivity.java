@@ -106,7 +106,7 @@ public abstract class CameraActivity extends PluginActivity
 
   private final String CLOUD_UPLOAD_RESULT_KEY_NAME = "UploadResult";
   private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
-  private boolean ENABLE_CLOUD_UPLOAD = true;
+  private boolean ENABLE_CLOUD_UPLOAD = false;
 
   private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
     @Override
@@ -169,7 +169,7 @@ public abstract class CameraActivity extends PluginActivity
 
     try {
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
-      mCaptureTime = simpleDateFormat.parse("2018/10/6 12:00:00"); // initialize to the past
+      mCaptureTime = simpleDateFormat.parse("2016/10/6 12:00:00"); // initialize to the past
     } catch (ParseException e) {
       e.printStackTrace();
     }
