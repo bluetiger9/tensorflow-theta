@@ -45,11 +45,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.tensorflow.demo.task.TakePictureTask;
-import com.theta360.pluginlibrary.activity.PluginActivity;
-import com.theta360.pluginlibrary.callback.KeyCallback;
-import com.theta360.pluginlibrary.receiver.KeyReceiver;
-import com.theta360.pluginlibrary.values.LedColor;
-import com.theta360.pluginlibrary.values.LedTarget;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
@@ -64,7 +59,7 @@ import org.tensorflow.demo.R; // Explicit import needed for internal Google buil
 
 import static android.os.SystemClock.sleep;
 
-public abstract class CameraActivity extends PluginActivity
+public abstract class CameraActivity extends AppCompatActivity
     implements OnImageAvailableListener, Camera.PreviewCallback {
   private static final Logger LOGGER = new Logger();
 
@@ -124,6 +119,35 @@ public abstract class CameraActivity extends PluginActivity
     }
   };
 
+  // ***! Comment-out when using pluginlibrary (1/5)
+  private void notificationCameraClose(){
+    sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE")); // for THETA
+  }
+
+  // ***! Comment-out when using pluginlibrary (2/5)
+  private void notificationCameraOpen(){
+    sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_OPEN")); // for THETA
+  }
+
+  // ***! Comment-out when using pluginlibrary (3/5)
+  public void notificationSuccess() {
+    Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+    intent.putExtra("packageName", getPackageName());
+    intent.putExtra("exitStatus", "success");
+    sendBroadcast(intent);
+    finishAndRemoveTask();
+  }
+
+  // ***! Comment-out when using pluginlibrary (4/5)
+  public void notificationError(String message) {
+    Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+    intent.putExtra("packageName", getPackageName());
+    intent.putExtra("exitStatus", "failure");
+    intent.putExtra("message", message);
+    sendBroadcast(intent);
+    finishAndRemoveTask();
+  }
+
   // Upload fileUrl to Google Photos by Cloud Upload plug-in
   private void cloudUpload(String fileUrl){
     // Convert fileUrl to filePath
@@ -176,14 +200,15 @@ public abstract class CameraActivity extends PluginActivity
       e.printStackTrace();
     }
 
-    // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
-    setAutoClose(false);
-
-    if(ENABLE_CLOUD_UPLOAD) {
-      notificationWlanCl(); // for uploading file
-    }else{
-      notificationWlanOff(); // for power saving
-    }
+    // ***! Uncomment when using pluginlibrary (1/5)
+//      // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
+//      setAutoClose(false);
+//
+//      if (ENABLE_CLOUD_UPLOAD) {
+//        notificationWlanCl(); // for uploading file
+//      } else {
+//        notificationWlanOff(); // for power saving
+//      }
     notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -202,33 +227,35 @@ public abstract class CameraActivity extends PluginActivity
       notificationError("Permissions are not granted.");
     }
 
-    // Set a callback when a button operation event is acquired.
-    setKeyCallback(new KeyCallback() {
-      @Override
-      public void onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
-          stopInferenceAndCapture();
-        }
-      }
 
-      @Override
-      public void onKeyUp(int keyCode, KeyEvent event) {
-        /**
-         * You can control the LED of the camera.
-         * It is possible to change the way of lighting, the cycle of blinking, the color of light emission.
-         * Light emitting color can be changed only LED3.
-         */
-      }
-
-      @Override
-      public void onKeyLongPress(int keyCode, KeyEvent event) {
-        if (keyCode == KeyReceiver.KEYCODE_MEDIA_RECORD){
-          if(!isTakingPicture) {
-            endProcess();
-          }
-        }
-      }
-    });
+    // ***! Uncomment when using pluginlibrary (2/5)
+//    // Set a callback when a button operation event is acquired.
+//    setKeyCallback(new KeyCallback() {
+//      @Override
+//      public void onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
+//          stopInferenceAndCapture();
+//        }
+//      }
+//
+//      @Override
+//      public void onKeyUp(int keyCode, KeyEvent event) {
+//        /**
+//         * You can control the LED of the camera.
+//         * It is possible to change the way of lighting, the cycle of blinking, the color of light emission.
+//         * Light emitting color can be changed only LED3.
+//         */
+//      }
+//
+//      @Override
+//      public void onKeyLongPress(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyReceiver.KEYCODE_MEDIA_RECORD){
+//          if(!isTakingPicture) {
+//            endProcess();
+//          }
+//        }
+//      }
+//    });
   }
 
   protected void stopInferenceAndCapture() {
@@ -274,7 +301,9 @@ public abstract class CameraActivity extends PluginActivity
     if (!isEnded) {
       isEnded = true;
       stopInference();
-      close();
+
+      // ***! Uncomment when using pluginlibrary (3/5)
+//      close();
     }
   }
 
@@ -421,11 +450,12 @@ public abstract class CameraActivity extends PluginActivity
   public synchronized void onStart() {
     LOGGER.d("onStart " + this);
 
-    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
-    notificationLedHide(LedTarget.LED5);
-    notificationLedHide(LedTarget.LED6);
-    notificationLedHide(LedTarget.LED7);
-    notificationLedHide(LedTarget.LED8);
+    // ***! Uncomment when using pluginlibrary (4/5)
+//    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
+//    notificationLedHide(LedTarget.LED5);
+//    notificationLedHide(LedTarget.LED6);
+//    notificationLedHide(LedTarget.LED7);
+//    notificationLedHide(LedTarget.LED8);
     super.onStart();
   }
 
@@ -466,7 +496,9 @@ public abstract class CameraActivity extends PluginActivity
     LOGGER.d("onDestroy " + this);
     if (!isFinishing()) {
       LOGGER.d("Requesting finish");
-      close();
+
+      // ***! Uncomment when using pluginlibrary (5/5)
+//      close();
     }
     super.onDestroy();
   }

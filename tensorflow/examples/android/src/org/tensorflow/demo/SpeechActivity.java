@@ -35,6 +35,7 @@ import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -50,8 +51,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.theta360.pluginlibrary.activity.PluginActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,7 +64,7 @@ import org.tensorflow.demo.R;
  * An activity that listens for audio and then uses a TensorFlow model to detect particular classes,
  * by default a small set of action words.
  */
-public class SpeechActivity extends PluginActivity {
+public class SpeechActivity extends AppCompatActivity {
 
   // Constants that control the behavior of the recognition code and model
   // settings. See the audio recognition tutorial for a detailed explanation of
@@ -105,6 +104,16 @@ public class SpeechActivity extends PluginActivity {
   private List<String> labels = new ArrayList<String>();
   private List<String> displayedLabels = new ArrayList<>();
   private RecognizeCommands recognizeCommands = null;
+
+  // ***! Comment-out when using pluginlibrary (5/5)
+  public void notificationError(String message) {
+    Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+    intent.putExtra("packageName", getPackageName());
+    intent.putExtra("exitStatus", "failure");
+    intent.putExtra("message", message);
+    sendBroadcast(intent);
+    finishAndRemoveTask();
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
