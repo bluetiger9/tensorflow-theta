@@ -209,7 +209,9 @@ public abstract class CameraActivity extends AppCompatActivity
 //      } else {
 //        notificationWlanOff(); // for power saving
 //      }
-    notificationCameraClose();
+
+    // @ Uncomment for THETA
+    //notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

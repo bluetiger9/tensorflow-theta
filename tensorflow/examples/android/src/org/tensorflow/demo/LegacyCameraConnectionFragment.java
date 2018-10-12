@@ -186,7 +186,10 @@ public class LegacyCameraConnectionFragment extends Fragment {
                         sizes, desiredSize.getWidth(), desiredSize.getHeight());
         parameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
         //camera.setDisplayOrientation(90);
-        parameters.set("RIC_SHOOTING_MODE", "RicMoviePreview1024"); // for THETA
+
+// @ Uncomment for THETA
+//        parameters.set("RIC_SHOOTING_MODE", "RicMoviePreview1024"); // for THETA
+
         camera.setParameters(parameters);
         camera.setPreviewTexture(textureView.getSurfaceTexture());
       } catch (IOException exception) {

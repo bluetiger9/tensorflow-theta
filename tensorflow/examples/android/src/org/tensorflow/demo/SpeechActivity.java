@@ -120,8 +120,9 @@ public class SpeechActivity extends AppCompatActivity {
     // Set up the UI.
     super.onCreate(savedInstanceState);
 
-    AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE); // for THETA
-    am.setParameters("RicUseBFormat=false"); // for THETA
+    // @ Uncomment for THETA
+    // AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE); // for THETA
+    // am.setParameters("RicUseBFormat=false"); // for THETA
 
     setContentView(R.layout.activity_speech);
     quitButton = (Button) findViewById(R.id.quit);
