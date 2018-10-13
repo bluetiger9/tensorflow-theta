@@ -44,8 +44,6 @@ import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import org.tensorflow.demo.task.TakePictureTask;
-
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -95,7 +93,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private Date mCaptureTime;
   private final long mThreashIgnore_msec = 15 * 1000; // Capturing interval [msec]
 
-  private final String mObjectToFind = "person"; // Take picture when the object found.
+  private final String mObjectToFind = "something"; // Take picture when the object found. Something to find from assets/coco_labels_list.txt for TensorFlowObjectDetectionAPIModel.
 
   private boolean isEnded = false;
 
@@ -103,21 +101,22 @@ public abstract class CameraActivity extends AppCompatActivity
   private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
   private boolean ENABLE_CLOUD_UPLOAD = false;
 
-  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
-    @Override
-    public void onTakePicture(String fileUrl) {
-      //fileUrl = "http://127.0.0.1:8080/files/150100525831424d420703bede5d2400/100RICOH/R0010231.JPG"
-      LOGGER.d("onTakePicture: " + fileUrl);
-      isTakingPicture = false;
-
-      if(ENABLE_CLOUD_UPLOAD) {
-        cloudUpload(fileUrl);
-      }else {
-        // Start Preview
-        startInference();
-      }
-    }
-  };
+  // ***! Uncomment when using pluginlibrary (1/7)
+//  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
+//    @Override
+//    public void onTakePicture(String fileUrl) {
+//      //fileUrl = "http://127.0.0.1:8080/files/150100525831424d420703bede5d2400/100RICOH/R0010231.JPG"
+//      LOGGER.d("onTakePicture: " + fileUrl);
+//      isTakingPicture = false;
+//
+//      if(ENABLE_CLOUD_UPLOAD) {
+//        cloudUpload(fileUrl);
+//      }else {
+//        // Start Preview
+//        startInference();
+//      }
+//    }
+//  };
 
   // ***! Comment-out when using pluginlibrary (1/5)
   private void notificationCameraClose(){
@@ -200,7 +199,7 @@ public abstract class CameraActivity extends AppCompatActivity
       e.printStackTrace();
     }
 
-    // ***! Uncomment when using pluginlibrary (1/5)
+    // ***! Uncomment when using pluginlibrary (2/7)
 //      // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
 //      setAutoClose(false);
 //
@@ -230,7 +229,7 @@ public abstract class CameraActivity extends AppCompatActivity
     }
 
 
-    // ***! Uncomment when using pluginlibrary (2/5)
+    // ***! Uncomment when using pluginlibrary (3/7)
 //    // Set a callback when a button operation event is acquired.
 //    setKeyCallback(new KeyCallback() {
 //      @Override
@@ -265,7 +264,8 @@ public abstract class CameraActivity extends AppCompatActivity
 
     isTakingPicture = true;
     // Take Picture
-    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
+// ***! Uncomment when using pluginlibrary (4/7)
+//    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
   }
 
   protected void startInference() {
@@ -304,7 +304,7 @@ public abstract class CameraActivity extends AppCompatActivity
       isEnded = true;
       stopInference();
 
-      // ***! Uncomment when using pluginlibrary (3/5)
+      // ***! Uncomment when using pluginlibrary (5/7)
 //      close();
     }
   }
@@ -452,7 +452,7 @@ public abstract class CameraActivity extends AppCompatActivity
   public synchronized void onStart() {
     LOGGER.d("onStart " + this);
 
-    // ***! Uncomment when using pluginlibrary (4/5)
+    // ***! Uncomment when using pluginlibrary (6/7)
 //    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
 //    notificationLedHide(LedTarget.LED5);
 //    notificationLedHide(LedTarget.LED6);
@@ -499,7 +499,7 @@ public abstract class CameraActivity extends AppCompatActivity
     if (!isFinishing()) {
       LOGGER.d("Requesting finish");
 
-      // ***! Uncomment when using pluginlibrary (5/5)
+      // ***! Uncomment when using pluginlibrary (7/7)
 //      close();
     }
     super.onDestroy();
