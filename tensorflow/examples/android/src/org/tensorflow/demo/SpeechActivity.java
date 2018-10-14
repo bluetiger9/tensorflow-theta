@@ -105,7 +105,7 @@ public class SpeechActivity extends AppCompatActivity {
   private List<String> displayedLabels = new ArrayList<>();
   private RecognizeCommands recognizeCommands = null;
 
-  // ***! Comment-out when using pluginlibrary (5/5)
+  // Step2: Comment-out when using pluginlibrary 1
   public void notificationError(String message) {
     Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
     intent.putExtra("packageName", getPackageName());
@@ -120,7 +120,7 @@ public class SpeechActivity extends AppCompatActivity {
     // Set up the UI.
     super.onCreate(savedInstanceState);
 
-    // @ Uncomment for THETA
+    // Step1: Uncomment for THETA, 1
     // AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE); // for THETA
     // am.setParameters("RicUseBFormat=false"); // for THETA
 

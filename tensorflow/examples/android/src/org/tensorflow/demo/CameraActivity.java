@@ -93,15 +93,17 @@ public abstract class CameraActivity extends AppCompatActivity
   private Date mCaptureTime;
   private final long mThreashIgnore_msec = 15 * 1000; // Capturing interval [msec]
 
-  private final String mObjectToFind = "something"; // Take picture when the object found. Something to find from assets/coco_labels_list.txt for TensorFlowObjectDetectionAPIModel.
+  private final String mObjectToFind = "person"; // Take picture when the object found. Something to find from assets/coco_labels_list.txt for TensorFlowObjectDetectionAPIModel.
 
   private boolean isEnded = false;
 
   private final String CLOUD_UPLOAD_RESULT_KEY_NAME = "UploadResult";
   private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
+
+  // Step4: Change to "true" for using Cloud Upload plug-in, 1
   private boolean ENABLE_CLOUD_UPLOAD = false;
 
-  // ***! Uncomment when using pluginlibrary (1/7)
+  // Step3: Uncomment when taking a photo with WebAPI, 1
 //  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
 //    @Override
 //    public void onTakePicture(String fileUrl) {
@@ -110,7 +112,8 @@ public abstract class CameraActivity extends AppCompatActivity
 //      isTakingPicture = false;
 //
 //      if(ENABLE_CLOUD_UPLOAD) {
-//        cloudUpload(fileUrl);
+//        // Step4: Uncomment for using Cloud Upload plug-in, 2
+//        //cloudUpload(fileUrl);
 //      }else {
 //        // Start Preview
 //        startInference();
@@ -118,17 +121,17 @@ public abstract class CameraActivity extends AppCompatActivity
 //    }
 //  };
 
-  // ***! Comment-out when using pluginlibrary (1/5)
+  // Step2: Comment-out when using pluginlibrary 2
   private void notificationCameraClose(){
     sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_CLOSE")); // for THETA
   }
 
-  // ***! Comment-out when using pluginlibrary (2/5)
+  // Step2: Comment-out when using pluginlibrary 3
   private void notificationCameraOpen(){
     sendBroadcast(new Intent("com.theta360.plugin.ACTION_MAIN_CAMERA_OPEN")); // for THETA
   }
 
-  // ***! Comment-out when using pluginlibrary (3/5)
+  // Step2: Comment-out when using pluginlibrary 4
   public void notificationSuccess() {
     Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
     intent.putExtra("packageName", getPackageName());
@@ -137,7 +140,7 @@ public abstract class CameraActivity extends AppCompatActivity
     finishAndRemoveTask();
   }
 
-  // ***! Comment-out when using pluginlibrary (4/5)
+  // Step2: Comment-out when using pluginlibrary 5
   public void notificationError(String message) {
     Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
     intent.putExtra("packageName", getPackageName());
@@ -147,41 +150,42 @@ public abstract class CameraActivity extends AppCompatActivity
     finishAndRemoveTask();
   }
 
-  // Upload fileUrl to Google Photos by Cloud Upload plug-in
-  private void cloudUpload(String fileUrl){
-    // Convert fileUrl to filePath
-    int lastIndex = fileUrl.lastIndexOf('/');
-    String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
-    String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
-    LOGGER.d("cloudUpload: " + filePath);
-
-    // Call File Cloud Upload
-    Intent intent=new Intent();
-    ArrayList<String> photoList = new ArrayList();
-    photoList.add(filePath);
-    intent.setClassName("com.theta360.cloudupload","com.theta360.cloudupload.MainActivity");
-    intent.putStringArrayListExtra("com.theta360.cloudupload.photoList", photoList);
-    startActivityForResult(intent, CLOUD_UPLOAD_REQUSEST_CODE);
-    // once go to onStop after calling startActivityForResult
-  }
-
-  // Result from cloudupload
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data){
-    LOGGER.d("onActivityResult: " + requestCode + ", resultCode=" + resultCode);
-    switch(requestCode) {
-      case (CLOUD_UPLOAD_REQUSEST_CODE):
-        if(resultCode == RESULT_OK){
-          boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
-          LOGGER.d("uploadResult: " + String.valueOf(uploadResult));
-        }
-        startInference();
-        break;
-      default:
-        break;
-    }
-    // onRestart and onStart will be called.
-  }
+  // Step4: Uncomment for using Cloud Upload plug-in, 3
+//  // Upload fileUrl to Google Photos by Cloud Upload plug-in
+//  private void cloudUpload(String fileUrl){
+//    // Convert fileUrl to filePath
+//    int lastIndex = fileUrl.lastIndexOf('/');
+//    String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
+//    String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
+//    LOGGER.d("cloudUpload: " + filePath);
+//
+//    // Call File Cloud Upload
+//    Intent intent=new Intent();
+//    ArrayList<String> photoList = new ArrayList();
+//    photoList.add(filePath);
+//    intent.setClassName("com.theta360.cloudupload","com.theta360.cloudupload.MainActivity");
+//    intent.putStringArrayListExtra("com.theta360.cloudupload.photoList", photoList);
+//    startActivityForResult(intent, CLOUD_UPLOAD_REQUSEST_CODE);
+//    // once go to onStop after calling startActivityForResult
+//  }
+//
+//  // Result from cloudupload
+//  @Override
+//  protected void onActivityResult(int requestCode, int resultCode, Intent data){
+//    LOGGER.d("onActivityResult: " + requestCode + ", resultCode=" + resultCode);
+//    switch(requestCode) {
+//      case (CLOUD_UPLOAD_REQUSEST_CODE):
+//        if(resultCode == RESULT_OK){
+//          boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
+//          LOGGER.d("uploadResult: " + String.valueOf(uploadResult));
+//        }
+//        startInference();
+//        break;
+//      default:
+//        break;
+//    }
+//    // onRestart and onStart will be called.
+//  }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -199,7 +203,7 @@ public abstract class CameraActivity extends AppCompatActivity
       e.printStackTrace();
     }
 
-    // ***! Uncomment when using pluginlibrary (2/7)
+    // Step2: Uncomment when using pluginlibrary 6
 //      // Set enable to close by pluginlibrary, If you set false, please call close() after finishing your end processing.
 //      setAutoClose(false);
 //
@@ -209,7 +213,7 @@ public abstract class CameraActivity extends AppCompatActivity
 //        notificationWlanOff(); // for power saving
 //      }
 
-    // @ Uncomment for THETA
+    // Step1: Uncomment for THETA, 3
     //notificationCameraClose();
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -229,7 +233,7 @@ public abstract class CameraActivity extends AppCompatActivity
     }
 
 
-    // ***! Uncomment when using pluginlibrary (3/7)
+    // Step2: Uncomment when using pluginlibrary 7
 //    // Set a callback when a button operation event is acquired.
 //    setKeyCallback(new KeyCallback() {
 //      @Override
@@ -259,55 +263,56 @@ public abstract class CameraActivity extends AppCompatActivity
 //    });
   }
 
-  protected void stopInferenceAndCapture() {
-    stopInference();
-
-    isTakingPicture = true;
-    // Take Picture
-// ***! Uncomment when using pluginlibrary (4/7)
+// Step3: Uncomment when taking a photo with WebAPI, 2
+//  protected void stopInferenceAndCapture() {
+//    stopInference();
+//
+//    isTakingPicture = true;
+//    // Take Picture
 //    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
-  }
+//  }
+//
+//  protected void startInference() {
+//    if (isEnded) {
+//      // now on ending process
+//    }else{
+//      notificationCameraClose();
+//      sleep(400);
+//
+//      mCameraActivityHandler.post(new Runnable() {
+//        @Override
+//        public void run() {
+//          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+//          fragment.onResume();
+//          isInferenceWorking = true;
+//        }
+//      });
+//    }
+//  }
+//
+//  protected void stopInference() {
+//    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+//    if(isInferenceWorking) {
+//      isInferenceWorking = false;
+//      // Stop Preview
+//      fragment.onPause();
+//      notificationCameraOpen();
+//      sleep(600);
+//    }
+//  }
 
-  protected void startInference() {
-    if (isEnded) {
-      // now on ending process
-    }else{
-      notificationCameraClose();
-      sleep(400);
-
-      mCameraActivityHandler.post(new Runnable() {
-        @Override
-        public void run() {
-          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-          fragment.onResume();
-          isInferenceWorking = true;
-        }
-      });
-    }
-  }
-
-  protected void stopInference() {
-    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-    if(isInferenceWorking) {
-      isInferenceWorking = false;
-      // Stop Preview
-      fragment.onPause();
-      notificationCameraOpen();
-      sleep(600);
-    }
-  }
-
-  private void endProcess() {
-    LOGGER.d("CameraActivity::endProcess(): "+ isEnded);
-
-    if (!isEnded) {
-      isEnded = true;
-      stopInference();
-
-      // ***! Uncomment when using pluginlibrary (5/7)
+// Step2: Uncomment when using pluginlibrary 8
+//  private void endProcess() {
+//    LOGGER.d("CameraActivity::endProcess(): "+ isEnded);
+//
+//    if (!isEnded) {
+//      isEnded = true;
+//      // Step3: Uncomment when taking a photo with WebAPI, 3
+//      // stopInference();
+//
 //      close();
-    }
-  }
+//    }
+//  }
 
   private byte[] lastPreviewFrame;
 
@@ -371,15 +376,16 @@ public abstract class CameraActivity extends AppCompatActivity
         };
     processImage();
 
-    if( objectNameFound() ) {
-      mObjectNameFound = false;
-      Date currentTime = Calendar.getInstance().getTime();
-      long diff_msec = currentTime.getTime() - mCaptureTime.getTime();
-      if (diff_msec > mThreashIgnore_msec){
-        stopInferenceAndCapture();
-        mCaptureTime = currentTime;
-      }
-    }
+// Step3: Uncomment when taking a photo with WebAPI, 4
+//    if( objectNameFound() ) {
+//      mObjectNameFound = false;
+//      Date currentTime = Calendar.getInstance().getTime();
+//      long diff_msec = currentTime.getTime() - mCaptureTime.getTime();
+//      if (diff_msec > mThreashIgnore_msec){
+//        stopInferenceAndCapture();
+//        mCaptureTime = currentTime;
+//      }
+//    }
   }
 
   /**
@@ -452,7 +458,7 @@ public abstract class CameraActivity extends AppCompatActivity
   public synchronized void onStart() {
     LOGGER.d("onStart " + this);
 
-    // ***! Uncomment when using pluginlibrary (6/7)
+    // Step2: Uncomment when using pluginlibrary 9
 //    notificationLedShow(LedTarget.LED4); // Turn ON Camera LED
 //    notificationLedHide(LedTarget.LED5);
 //    notificationLedHide(LedTarget.LED6);
@@ -499,7 +505,7 @@ public abstract class CameraActivity extends AppCompatActivity
     if (!isFinishing()) {
       LOGGER.d("Requesting finish");
 
-      // ***! Uncomment when using pluginlibrary (7/7)
+      // Step2: Uncomment when using pluginlibrary 10
 //      close();
     }
     super.onDestroy();
