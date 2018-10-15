@@ -113,11 +113,6 @@ public abstract class PluginActivity extends AppCompatActivity {
                     }
                 });
         Thread.setDefaultUncaughtExceptionHandler(uncaughtException);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         mKeyReceiver = new KeyReceiver(onKeyReceiver);
         IntentFilter keyFilter = new IntentFilter();
@@ -127,13 +122,23 @@ public abstract class PluginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
         if (!isClosed) {
             close();
         }
         unregisterReceiver(mKeyReceiver);
 
-        super.onPause();
+        super.onDestroy();
     }
 
     public void setKeyCallback(KeyCallback keyCallback) {

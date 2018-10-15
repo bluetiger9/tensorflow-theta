@@ -107,7 +107,7 @@ public abstract class CameraActivity extends PluginActivity
   private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
 
   // Step4: Change to "true" for using Cloud Upload plug-in, 1
-  private boolean ENABLE_CLOUD_UPLOAD = false;
+  private boolean ENABLE_CLOUD_UPLOAD = true;
 
   // Step3: Uncomment when taking a photo with WebAPI, 1
   private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
@@ -119,7 +119,7 @@ public abstract class CameraActivity extends PluginActivity
 
       if(ENABLE_CLOUD_UPLOAD) {
         // Step4: Uncomment for using Cloud Upload plug-in, 2
-        //cloudUpload(fileUrl);
+        cloudUpload(fileUrl);
       }else {
         // Start Preview
         startInference();
@@ -157,41 +157,41 @@ public abstract class CameraActivity extends PluginActivity
 //  }
 
   // Step4: Uncomment for using Cloud Upload plug-in, 3
-//  // Upload fileUrl to Google Photos by Cloud Upload plug-in
-//  private void cloudUpload(String fileUrl){
-//    // Convert fileUrl to filePath
-//    int lastIndex = fileUrl.lastIndexOf('/');
-//    String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
-//    String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
-//    LOGGER.d("cloudUpload: " + filePath);
-//
-//    // Call File Cloud Upload
-//    Intent intent=new Intent();
-//    ArrayList<String> photoList = new ArrayList();
-//    photoList.add(filePath);
-//    intent.setClassName("com.theta360.cloudupload","com.theta360.cloudupload.MainActivity");
-//    intent.putStringArrayListExtra("com.theta360.cloudupload.photoList", photoList);
-//    startActivityForResult(intent, CLOUD_UPLOAD_REQUSEST_CODE);
-//    // once go to onStop after calling startActivityForResult
-//  }
-//
-//  // Result from cloudupload
-//  @Override
-//  protected void onActivityResult(int requestCode, int resultCode, Intent data){
-//    LOGGER.d("onActivityResult: " + requestCode + ", resultCode=" + resultCode);
-//    switch(requestCode) {
-//      case (CLOUD_UPLOAD_REQUSEST_CODE):
-//        if(resultCode == RESULT_OK){
-//          boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
-//          LOGGER.d("uploadResult: " + String.valueOf(uploadResult));
-//        }
-//        startInference();
-//        break;
-//      default:
-//        break;
-//    }
-//    // onRestart and onStart will be called.
-//  }
+  // Upload fileUrl to Google Photos by Cloud Upload plug-in
+  private void cloudUpload(String fileUrl){
+    // Convert fileUrl to filePath
+    int lastIndex = fileUrl.lastIndexOf('/');
+    String dirAndFileName = fileUrl.substring(fileUrl.lastIndexOf('/', lastIndex-1) + 1); // 100RICOH/R0010231.JPG
+    String filePath = "/storage/emulated/0/DCIM/"+dirAndFileName;
+    LOGGER.d("cloudUpload: " + filePath);
+
+    // Call File Cloud Upload
+    Intent intent=new Intent();
+    ArrayList<String> photoList = new ArrayList();
+    photoList.add(filePath);
+    intent.setClassName("com.theta360.cloudupload","com.theta360.cloudupload.MainActivity");
+    intent.putStringArrayListExtra("com.theta360.cloudupload.photoList", photoList);
+    startActivityForResult(intent, CLOUD_UPLOAD_REQUSEST_CODE);
+    // once go to onStop after calling startActivityForResult
+  }
+
+  // Result from cloudupload
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    LOGGER.d("onActivityResult: " + requestCode + ", resultCode=" + resultCode);
+    switch(requestCode) {
+      case (CLOUD_UPLOAD_REQUSEST_CODE):
+        if(resultCode == RESULT_OK){
+          boolean uploadResult = data.getBooleanExtra(CLOUD_UPLOAD_RESULT_KEY_NAME, false);
+          LOGGER.d("uploadResult: " + String.valueOf(uploadResult));
+        }
+        startInference();
+        break;
+      default:
+        break;
+    }
+    // onRestart and onStart will be called.
+  }
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
