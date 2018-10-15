@@ -239,7 +239,8 @@ public abstract class CameraActivity extends AppCompatActivity
 //      @Override
 //      public void onKeyDown(int keyCode, KeyEvent event) {
 //        if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
-//          stopInferenceAndCapture();
+//          // Step3: Uncomment when taking a photo with WebAPI, 2
+//          // stopInferenceAndCapture();
 //        }
 //      }
 //
@@ -263,7 +264,7 @@ public abstract class CameraActivity extends AppCompatActivity
 //    });
   }
 
-// Step3: Uncomment when taking a photo with WebAPI, 2
+// Step3: Uncomment when taking a photo with WebAPI, 3
 //  protected void stopInferenceAndCapture() {
 //    stopInference();
 //
@@ -307,7 +308,7 @@ public abstract class CameraActivity extends AppCompatActivity
 //
 //    if (!isEnded) {
 //      isEnded = true;
-//      // Step3: Uncomment when taking a photo with WebAPI, 3
+//      // Step3: Uncomment when taking a photo with WebAPI, 4
 //      // stopInference();
 //
 //      close();
@@ -376,7 +377,7 @@ public abstract class CameraActivity extends AppCompatActivity
         };
     processImage();
 
-// Step3: Uncomment when taking a photo with WebAPI, 4
+// Step3: Uncomment when taking a photo with WebAPI, 5
 //    if( objectNameFound() ) {
 //      mObjectNameFound = false;
 //      Date currentTime = Calendar.getInstance().getTime();
