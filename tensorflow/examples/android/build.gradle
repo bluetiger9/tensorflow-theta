@@ -198,4 +198,5 @@ dependencies {
         implementation 'org.tensorflow:tensorflow-android:+'
     }
     implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation project(path: ':pluginlibrary')
 }
