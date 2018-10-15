@@ -59,6 +59,7 @@ import java.util.Date;
 import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.Logger;
 import org.tensorflow.demo.R; // Explicit import needed for internal Google builds.
+import org.tensorflow.demo.task.TakePictureTask;
 
 import static android.os.SystemClock.sleep;
 
@@ -109,22 +110,22 @@ public abstract class CameraActivity extends PluginActivity
   private boolean ENABLE_CLOUD_UPLOAD = false;
 
   // Step3: Uncomment when taking a photo with WebAPI, 1
-//  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
-//    @Override
-//    public void onTakePicture(String fileUrl) {
-//      //fileUrl = "http://127.0.0.1:8080/files/150100525831424d420703bede5d2400/100RICOH/R0010231.JPG"
-//      LOGGER.d("onTakePicture: " + fileUrl);
-//      isTakingPicture = false;
-//
-//      if(ENABLE_CLOUD_UPLOAD) {
-//        // Step4: Uncomment for using Cloud Upload plug-in, 2
-//        //cloudUpload(fileUrl);
-//      }else {
-//        // Start Preview
-//        startInference();
-//      }
-//    }
-//  };
+  private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
+    @Override
+    public void onTakePicture(String fileUrl) {
+      //fileUrl = "http://127.0.0.1:8080/files/150100525831424d420703bede5d2400/100RICOH/R0010231.JPG"
+      LOGGER.d("onTakePicture: " + fileUrl);
+      isTakingPicture = false;
+
+      if(ENABLE_CLOUD_UPLOAD) {
+        // Step4: Uncomment for using Cloud Upload plug-in, 2
+        //cloudUpload(fileUrl);
+      }else {
+        // Start Preview
+        startInference();
+      }
+    }
+  };
 
   // Step2: Comment-out when using pluginlibrary 2
 //  private void notificationCameraClose(){
@@ -245,7 +246,7 @@ public abstract class CameraActivity extends PluginActivity
       public void onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
           // Step3: Uncomment when taking a photo with WebAPI, 2
-          // stopInferenceAndCapture();
+          stopInferenceAndCapture();
         }
       }
 
@@ -269,43 +270,43 @@ public abstract class CameraActivity extends PluginActivity
     });
   }
 
-// Step3: Uncomment when taking a photo with WebAPI, 3
-//  protected void stopInferenceAndCapture() {
-//    stopInference();
-//
-//    isTakingPicture = true;
-//    // Take Picture
-//    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
-//  }
-//
-//  protected void startInference() {
-//    if (isEnded) {
-//      // now on ending process
-//    }else{
-//      notificationCameraClose();
-//      sleep(400);
-//
-//      mCameraActivityHandler.post(new Runnable() {
-//        @Override
-//        public void run() {
-//          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-//          fragment.onResume();
-//          isInferenceWorking = true;
-//        }
-//      });
-//    }
-//  }
-//
-//  protected void stopInference() {
-//    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-//    if(isInferenceWorking) {
-//      isInferenceWorking = false;
-//      // Stop Preview
-//      fragment.onPause();
-//      notificationCameraOpen();
-//      sleep(600);
-//    }
-//  }
+  // Step3: Uncomment when taking a photo with WebAPI, 3
+  protected void stopInferenceAndCapture() {
+    stopInference();
+
+    isTakingPicture = true;
+    // Take Picture
+    new org.tensorflow.demo.task.TakePictureTask(mTakePictureTaskCallback).execute();
+  }
+
+  protected void startInference() {
+    if (isEnded) {
+      // now on ending process
+    }else{
+      notificationCameraClose();
+      sleep(400);
+
+      mCameraActivityHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+          fragment.onResume();
+          isInferenceWorking = true;
+        }
+      });
+    }
+  }
+
+  protected void stopInference() {
+    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+    if(isInferenceWorking) {
+      isInferenceWorking = false;
+      // Stop Preview
+      fragment.onPause();
+      notificationCameraOpen();
+      sleep(600);
+    }
+  }
 
 // Step2: Uncomment when using pluginlibrary 8
   private void endProcess() {
@@ -314,7 +315,7 @@ public abstract class CameraActivity extends PluginActivity
     if (!isEnded) {
       isEnded = true;
       // Step3: Uncomment when taking a photo with WebAPI, 4
-      // stopInference();
+      stopInference();
 
       close();
     }
@@ -382,16 +383,16 @@ public abstract class CameraActivity extends PluginActivity
         };
     processImage();
 
-// Step3: Uncomment when taking a photo with WebAPI, 5
-//    if( objectNameFound() ) {
-//      mObjectNameFound = false;
-//      Date currentTime = Calendar.getInstance().getTime();
-//      long diff_msec = currentTime.getTime() - mCaptureTime.getTime();
-//      if (diff_msec > mThreashIgnore_msec){
-//        stopInferenceAndCapture();
-//        mCaptureTime = currentTime;
-//      }
-//    }
+    // Step3: Uncomment when taking a photo with WebAPI, 5
+    if( objectNameFound() ) {
+      mObjectNameFound = false;
+      Date currentTime = Calendar.getInstance().getTime();
+      long diff_msec = currentTime.getTime() - mCaptureTime.getTime();
+      if (diff_msec > mThreashIgnore_msec){
+        stopInferenceAndCapture();
+        mCaptureTime = currentTime;
+      }
+    }
   }
 
   /**
