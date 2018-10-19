@@ -107,7 +107,7 @@ public abstract class CameraActivity extends PluginActivity
   private final int CLOUD_UPLOAD_REQUSEST_CODE = 1;
 
   // Step4: Change to "true" for using Cloud Upload plug-in, 1
-  private boolean ENABLE_CLOUD_UPLOAD = true;
+  private boolean ENABLE_CLOUD_UPLOAD = false;
 
   // Step3: Uncomment when taking a photo with WebAPI, 1
   private org.tensorflow.demo.task.TakePictureTask.Callback mTakePictureTaskCallback = new TakePictureTask.Callback() {
