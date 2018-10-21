@@ -16,11 +16,6 @@
 
 package org.tensorflow.demo;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -42,6 +37,10 @@ import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -174,7 +173,7 @@ public class CameraConnectionFragment extends Fragment {
           cameraOpenCloseLock.release();
           cd.close();
           cameraDevice = null;
-          final Activity activity = getActivity();
+          final FragmentActivity activity = getActivity();
           if (null != activity) {
             activity.finish();
           }
@@ -244,7 +243,7 @@ public class CameraConnectionFragment extends Fragment {
    * @param text The message to show
    */
   private void showToast(final String text) {
-    final Activity activity = getActivity();
+    final FragmentActivity activity = getActivity();
     if (activity != null) {
       activity.runOnUiThread(
           new Runnable() {
@@ -361,7 +360,7 @@ public class CameraConnectionFragment extends Fragment {
    * Sets up member variables related to camera.
    */
   private void setUpCameraOutputs() {
-    final Activity activity = getActivity();
+    final FragmentActivity activity = getActivity();
     final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     try {
       final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
@@ -413,7 +412,7 @@ public class CameraConnectionFragment extends Fragment {
   private void openCamera(final int width, final int height) {
     setUpCameraOutputs();
     configureTransform(width, height);
-    final Activity activity = getActivity();
+    final FragmentActivity activity = getActivity();
     final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     try {
       if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
@@ -570,7 +569,7 @@ public class CameraConnectionFragment extends Fragment {
    * @param viewHeight The height of `mTextureView`
    */
   private void configureTransform(final int viewWidth, final int viewHeight) {
-    final Activity activity = getActivity();
+    final FragmentActivity activity = getActivity();
     if (null == textureView || null == previewSize || null == activity) {
       return;
     }
@@ -622,8 +621,8 @@ public class CameraConnectionFragment extends Fragment {
     }
 
     @Override
-    public Dialog onCreateDialog(final Bundle savedInstanceState) {
-      final Activity activity = getActivity();
+    public AlertDialog onCreateDialog(final Bundle savedInstanceState) {
+      final FragmentActivity activity = getActivity();
       return new AlertDialog.Builder(activity)
           .setMessage(getArguments().getString(ARG_MESSAGE))
           .setPositiveButton(

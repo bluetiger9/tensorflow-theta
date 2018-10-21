@@ -86,7 +86,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final DetectorMode MODE = DetectorMode.TF_OD_API;
 
   // Minimum detection confidence to track a detection.
-  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.6f;
+  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.7f;
   private static final float MINIMUM_CONFIDENCE_MULTIBOX = 0.1f;
   private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
 
@@ -242,6 +242,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   }
 
   OverlayView trackingOverlay;
+  private int countProcessingFrame=0;
 
   @Override
   protected void processImage() {
@@ -262,6 +263,17 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       readyForNextImage();
       return;
     }
+
+    {
+      // for power saving
+      countProcessingFrame++;
+      if (countProcessingFrame % 10 != 0) {
+        readyForNextImage();
+        return;
+      }
+      countProcessingFrame = 0;
+    }
+
     computingDetection = true;
     LOGGER.i("Preparing image " + currTimestamp + " for detection in bg thread.");
 
@@ -320,6 +332,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 cropToFrameTransform.mapRect(location);
                 result.setLocation(location);
                 mappedRecognitions.add(result);
+
+                String title = result.getTitle();
+                if( title.equals(mObjectNameToFind) ){
+                  mObjectNameFound = true;
+                }
               }
             }
 

@@ -274,6 +274,7 @@ public class MultiBoxTracker {
 
     if (rectsToTrack.isEmpty()) {
       logger.v("Nothing to track, aborting.");
+      trackedObjects.clear();
       return;
     }
 

@@ -31,10 +31,11 @@ the RecognizeCommands helper class.
 
 package org.tensorflow.demo;
 
+import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -42,11 +43,16 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.theta360.pluginlibrary.activity.PluginActivity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +66,7 @@ import org.tensorflow.demo.R;
  * An activity that listens for audio and then uses a TensorFlow model to detect particular classes,
  * by default a small set of action words.
  */
-public class SpeechActivity extends Activity {
+public class SpeechActivity extends PluginActivity {
 
   // Constants that control the behavior of the recognition code and model
   // settings. See the audio recognition tutorial for a detailed explanation of
@@ -79,6 +85,8 @@ public class SpeechActivity extends Activity {
   private static final String INPUT_DATA_NAME = "decoded_sample_data:0";
   private static final String SAMPLE_RATE_NAME = "decoded_sample_data:1";
   private static final String OUTPUT_SCORES_NAME = "labels_softmax";
+
+  private static final String PERMISSION_AUDIO = Manifest.permission.RECORD_AUDIO;
 
   // UI elements.
   private static final int REQUEST_RECORD_AUDIO = 13;
@@ -99,11 +107,22 @@ public class SpeechActivity extends Activity {
   private List<String> displayedLabels = new ArrayList<>();
   private RecognizeCommands recognizeCommands = null;
 
+  // Step2: Comment-out when using pluginlibrary 1
+//  public void notificationError(String message) {
+//    Intent intent = new Intent("com.theta360.plugin.ACTION_FINISH_PLUGIN");
+//    intent.putExtra("packageName", getPackageName());
+//    intent.putExtra("exitStatus", "failure");
+//    intent.putExtra("message", message);
+//    sendBroadcast(intent);
+//    finishAndRemoveTask();
+//  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     // Set up the UI.
     super.onCreate(savedInstanceState);
 
+    // Step1: Uncomment for THETA, 1
     AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE); // for THETA
     am.setParameters("RicUseBFormat=false"); // for THETA
 
@@ -157,16 +176,28 @@ public class SpeechActivity extends Activity {
     // Load the TensorFlow model.
     inferenceInterface = new TensorFlowInferenceInterface(getAssets(), MODEL_FILENAME);
 
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
     // Start the recording and recognition threads.
-    requestMicrophonePermission();
+    if( !hasPermission() ){
+      notificationError("Permissions are not granted.");
+    }
     startRecording();
     startRecognition();
+  }
+
+  private boolean hasPermission() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      return checkSelfPermission(PERMISSION_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    } else {
+      return true;
+    }
   }
 
   private void requestMicrophonePermission() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       requestPermissions(
-          new String[]{android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
+          new String[]{PERMISSION_AUDIO}, REQUEST_RECORD_AUDIO);
     }
   }
 
