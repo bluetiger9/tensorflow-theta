@@ -40,3 +40,5 @@ Step 4 — Fix PluginLibrary
 
 The steps above correspond to the tags on this GitHub repo. Please select the tag and follow the
 comments in the code.
+
+![Analytics](https://ga-beacon.appspot.com/UA-73311422-5/tensorflow-theta)
