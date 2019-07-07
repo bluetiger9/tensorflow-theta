@@ -27,3 +27,5 @@ out/
 .navigation/
 /captures
 .externalNativeBuild
+.gradle/
+.idea/

@@ -75,7 +75,7 @@ android_binary(
         ":external_assets",
     ],
     assets_dir = "",
-    custom_package = "org.tensorflow.demo",
+    custom_package = "io.github.bluetiger9.theta360.rescuecam.tensorflow.demo",
     inline_constants = 1,
     manifest = "AndroidManifest.xml",
     resource_files = glob(["res/**"]),

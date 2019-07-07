@@ -24,7 +24,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import com.theta360.pluginlibrary.UncaughtException;
-import com.theta360.pluginlibrary.UncaughtException.Callback;
 import com.theta360.pluginlibrary.callback.KeyCallback;
 import com.theta360.pluginlibrary.receiver.KeyReceiver;
 import com.theta360.pluginlibrary.values.ExitStatus;
@@ -106,7 +105,7 @@ public abstract class PluginActivity extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // Fix to be portrait
         UncaughtException uncaughtException = new UncaughtException(getApplicationContext(),
-                new Callback() {
+                new UncaughtException.Callback() {
                     @Override
                     public void onException(String message) {
                         notificationError(message);
@@ -124,10 +123,21 @@ public abstract class PluginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        //mKeyReceiver = new KeyReceiver(onKeyReceiver);
+        //IntentFilter keyFilter = new IntentFilter();
+        //keyFilter.addAction(KeyReceiver.ACTION_KEY_DOWN);
+        //keyFilter.addAction(KeyReceiver.ACTION_KEY_UP);
+        //registerReceiver(mKeyReceiver, keyFilter);
     }
 
     @Override
     protected void onPause() {
+        //if (!isClosed) {
+        //    close();
+        //}
+        //unregisterReceiver(mKeyReceiver);
+
         super.onPause();
     }
 

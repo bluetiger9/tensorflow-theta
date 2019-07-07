@@ -16,24 +16,43 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.tensorflow.demo">
+    package="io.github.bluetiger9.theta360.rescuecam">
 
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <application android:allowBackup="true"
+    <uses-feature android:name="com.theta360.receptor.v" android:required="true" />
+
+    <application
+        android:allowBackup="true"
         android:debuggable="true"
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/AppCompatTheme">
+        android:theme="@style/AppCompatTheme"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true">
 
-        <activity android:name="org.tensorflow.demo.DetectorActivity"
+        <activity android:name="io.github.bluetiger9.theta360.rescuecam.MainActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/activity_name_main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--activity android:name="DetectorActivity"
             android:screenOrientation="portrait"
             android:label="@string/activity_name_detection">
             <intent-filter>
@@ -41,9 +60,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-->
 
-        <activity android:name="org.tensorflow.demo.SpeechActivity"
+        <!--activity android:name="SpeechActivity"
             android:screenOrientation="portrait"
             android:label="@string/activity_name_speech">
             <intent-filter>
@@ -51,9 +70,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-->
 
-        <activity android:name="org.tensorflow.demo.StylizeActivity"
+        <!--activity android:name="StylizeActivity"
             android:screenOrientation="portrait"
             android:label="@string/activity_name_stylize">
             <intent-filter>
@@ -61,9 +80,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-->
 
-        <activity android:name="org.tensorflow.demo.ClassifierActivity"
+        <!--activity android:name="ClassifierActivity"
             android:screenOrientation="portrait"
             android:label="@string/activity_name_classification">
             <intent-filter>
@@ -71,7 +90,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-->
 
     </application>
 </manifest>
