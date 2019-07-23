@@ -23,12 +23,13 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.util.Log;
 
-import com.github.bluetiger9.theta360.rescuecam.network.WebRTCLibExtends.*;
+import io.github.bluetiger9.theta360.rescuecam.network.WebRTCLibExtends.*;
 
 import org.webrtc.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import io.github.bluetiger9.theta360.rescuecam.network.WebRTCLibExtends.ThetaCapturer;
 import io.github.bluetiger9.theta360.rescuecam.network.WebRTCLibExtends.ThetaEnumerator;
@@ -81,6 +82,8 @@ public class WebRTC implements PeerConnection.Observer {
     private PeerConnection mPeerConnection;
     private MediaStream mLocalStream;
     private VideoCapturer mVideoCapturer;
+
+    private Consumer<MediaStream> mediaStreamCallback;
 
     /**
      * Event handler for camera event from WebRTC library
@@ -300,6 +303,10 @@ public class WebRTC implements PeerConnection.Observer {
             if (!mLocalStream.addTrack(localAudioTrack)) {
                 Log.e(TAG, "Add audio track to stream error");
             }
+
+            if (mediaStreamCallback != null) {
+                mediaStreamCallback.accept(mLocalStream);
+            }
         }
     }
 
@@ -348,6 +355,10 @@ public class WebRTC implements PeerConnection.Observer {
             }
         }
         return null;
+    }
+
+    public void setMediaStreamCallback(Consumer<MediaStream> mediaStreamCallback) {
+        this.mediaStreamCallback = mediaStreamCallback;
     }
 
     /**

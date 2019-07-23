@@ -77,6 +77,33 @@ function initPreview() {
                 }
                 break;
             }
+            case 'tf-detection': {
+                console.log(message);
+                let canvas = document.getElementById('detections-canvas');
+                let video = document.getElementById('previewImage');
+                if (video.offsetWidth != canvas.width
+                    || video.offsetHeight != canvas.height) {
+
+                    canvas.width = video.offsetWidth;
+                    canvas.height = video.offsetHeight;
+                }
+
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#ff00ff";
+                ctx.font = "12px Arial";
+
+                let y = 50;
+                for (var i = 0; i < message.data.length; i++) {
+                    let text = JSON.stringify(message.data[i]);
+                    ctx.fillText(text, 10, y);
+
+                    y += ctx.measureText(text).height;
+                }
+
+                break;
+            }
             }
         };
     } else {

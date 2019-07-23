@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.001,maximum-scale=1.0,user-scalable=no">
   <meta name="format-detection" content="telephone=no">
-  <title>THETA WebRTC Sample</title>
+  <title>THETA WebRTC Live View with Smart AI</title>
   <link rel="stylesheet" type="text/css" media="all" href="css/swiper.min.css">
   <link rel="stylesheet" type="text/css" media="all" href="css/plugin.css">
   <script src="js/jquery-1.8.3.min.js"></script>
@@ -17,7 +17,7 @@
 <div class="plugin_base">
   <div class="app_header">
     <div class="spacer"></div>
-    <div class="title">THETA WebRTC Sample</div>
+    <div class="title">THETA WebRTC Live View with Smart AI</div>
     <div class="btn_container">
       <button class="btn btn--setting" id="setting_btn"></button>
     </div>
@@ -61,6 +61,7 @@
       </div>
       <div class="pluginpreview">
         <video id="previewImage" autoplay playsinline style="width: 1920px; height: 960px;"></video>
+        <canvas class="canvas" id="detections-canvas"></canvas>
       </div>
       <div class="pluginctrl">
         <div class="pluginctrl__shoot" onChange="setOptions()">

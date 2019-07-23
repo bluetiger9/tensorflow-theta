@@ -28,6 +28,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +44,9 @@ import org.java_websocket.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.webrtc.VideoFrame;
 
-import com.github.bluetiger9.theta360.rescuecam.R;
+import io.github.bluetiger9.theta360.rescuecam.R;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 
 import io.github.bluetiger9.theta360.rescuecam.model.CameraOption;
@@ -56,8 +58,8 @@ import io.github.bluetiger9.theta360.rescuecam.network.WebServer;
 import io.github.bluetiger9.theta360.rescuecam.network.model.commands.CommandsName;
 import io.github.bluetiger9.theta360.rescuecam.network.model.requests.CommandsRequest;
 import io.github.bluetiger9.theta360.rescuecam.network.model.responses.CommandsResponse;
-import com.github.bluetiger9.theta360.rescuecam.network.model.values.*;
-import com.github.bluetiger9.theta360.rescuecam.network.*;
+import io.github.bluetiger9.theta360.rescuecam.network.model.values.*;
+import io.github.bluetiger9.theta360.rescuecam.network.*;
 
 import io.github.bluetiger9.theta360.rescuecam.network.model.values.Errors;
 import io.github.bluetiger9.theta360.rescuecam.network.model.values.State;
@@ -65,9 +67,10 @@ import io.github.bluetiger9.theta360.rescuecam.network.model.values.Status;
 import io.github.bluetiger9.theta360.rescuecam.task.TakePictureTask;
 import io.github.bluetiger9.theta360.rescuecam.task.LiveViewTask;
 
-import io.theta360.pluginlibrary.activity.PluginActivity;
-import io.theta360.pluginlibrary.receiver.KeyReceiver;
-import io.theta360.pluginlibrary.callback.KeyCallback;
+import io.github.bluetiger9.theta360.rescuecam.tensorflow.demo.env.ImageUtils;
+import com.theta360.pluginlibrary.activity.PluginActivity;
+import com.theta360.pluginlibrary.receiver.KeyReceiver;
+import com.theta360.pluginlibrary.callback.KeyCallback;
 
 /**
  * Plug-in main activity class
@@ -218,6 +221,17 @@ public class MainActivity extends PluginActivity {
         if (checkPermissions()) {
             // Create and Start WebRTC
             mWebRTC = new WebRTC(this);
+
+            mWebRTC.setMediaStreamCallback(mediaStream -> {
+                Log.d(TAG, "Got Media Stream: " + mediaStream);
+
+                new TFClassifier(mediaStream.videoTracks.get(0), getAssets(),
+                        detectionJson -> {
+                            mWsClient.send(
+                                    "{ \"type\":\"tf-detection\", \"data\" : " + detectionJson + " }");
+                        });
+            });
+
         } else {
             // Not have the required permissions.
             mFinishStatus = FinishStatus.Failure;
@@ -225,6 +239,7 @@ public class MainActivity extends PluginActivity {
             finishAndRemoveTask();
         }
     }
+
 
     @Override
     protected void onDestroy() {
